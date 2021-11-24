@@ -28,13 +28,14 @@ function App() {
       marca: marca
      })
       .then(res => {
-        console.log(res);
+        // console.log(res);
         console.log(res.data);
       })
   }
 
   const handleSubmit = () => {
     guardarAuto()
+    
   }
 
   const getAutos = async () => {
@@ -50,7 +51,7 @@ function App() {
 
   useEffect(() => {
     getAutos()
-  }, [guardarAuto])
+  }, [()=>handleSubmit()])
 
   return (
     <div className="container">
@@ -74,7 +75,7 @@ function App() {
               <label className="form-label" >MARCA</label>
               <input type="text" className="marca form-control" id="marca" value={marca} name="marca" placeholder="Ingrese marca" onChange={handleInputChange} />
             </div>
-            <button type="button" onClick={handleSubmit} className="btn btn-primary">Guardar</button>
+            <button type="button" onClick={()=>handleSubmit()} className="btn btn-primary">Guardar</button>
           </form>
         </div>
       </div>
