@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Auto from './Auto.jsx';
 
-
 import { useForm } from './Custom-Hooks/useForm/useForm';
 
 function App() {
@@ -12,20 +11,24 @@ function App() {
   const initialForm = {
     patente: '',
     año: 0,
-    marca: ''
+    marcaa: ''
   };
 
-  const [formValues, handleInputChange] = useForm(initialForm);
+  const [formValues, handleInputChange, reset] = useForm(initialForm);
 
-  const [autos, setAutos] = useState([])
+  const [autos, setAutos] = useState([]);
 
-  const { patente, año, marca } = formValues
+  const [marcas, setMarca] = useState([]);
+
+  const {marca} = marcas;
+
+  const { patente, año, marcaa } = formValues
 
   const guardarAuto = async () => {
     await axios.post("http://localhost:5000/api/auto", { 
       patente: patente,
       anio: año,
-      marca: marca
+      marca: marcaa
      })
       .then(res => {
         // console.log(res);
@@ -34,9 +37,21 @@ function App() {
   }
 
   const handleSubmit = () => {
-    guardarAuto()
-    
+    guardarAuto();
+    reset();
+  };
+
+  const getMarca = async () => {
+    await axios.get("http://localhost:5000/api/marca/")
+      .then(res => {
+        // console.log(res.data);
+        setMarca(res.data)
+      })
+      .catch(res => {
+        console.error(res);
+      })
   }
+
 
   const getAutos = async () => {
     await axios.get("http://localhost:5000/api/auto")
@@ -50,8 +65,9 @@ function App() {
   }
 
   useEffect(() => {
-    getAutos()
-  }, [()=>handleSubmit()])
+    getAutos();
+    getMarca();
+  }, [autos])
 
   return (
     <div className="container">
@@ -72,8 +88,17 @@ function App() {
               <input type="number" className="año form-control" id="año" value={año} name="año" placeholder="Ingrese año" onChange={handleInputChange} />
             </div>
             <div className="mb-3">
+              
               <label className="form-label" >MARCA</label>
-              <input type="text" className="marca form-control" id="marca" value={marca} name="marca" placeholder="Ingrese marca" onChange={handleInputChange} />
+              {/* <input type="text" className="marca form-control" id="marca" value={marca} name="marca" placeholder="Ingrese marca" onChange={handleInputChange} /> */}
+              <select className="marca form-control" name="marcaa" id="marcaa" onChange={handleInputChange} >
+                <option value="opt1" disabled selected >Seleccione...</option>
+                {
+                  marca?.map((marc, index)=>(
+                    <option key={index} value={marc._id}>{marc.descripcion}</option>
+                  ))
+                }
+              </select>
             </div>
             <button type="button" onClick={()=>handleSubmit()} className="btn btn-primary">Guardar</button>
           </form>
